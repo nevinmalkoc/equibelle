@@ -240,17 +240,17 @@ class RoutePainter extends CustomPainter {
       final offset1 = toOffset(p1);
       final offset2 = toOffset(p2);
 
-      // Hıza göre renk seçimi
+      // Hıza göre renk seçimi (Hızlı yerler Kırmızı/Ateş!)
       Color segmentColor;
       if (p2.speed < 4.0) {
-        // Duruş veya çok yavaş yürüyüş (Bordo/Kırmızı ton)
-        segmentColor = const Color(0xFF9E2A2B);
+        // Duruş veya çok yavaş yürüyüş (Sakin Orman Yeşili)
+        segmentColor = const Color(0xFF2E6F40);
       } else if (p2.speed < 12.0) {
-        // Tırıs / Orta tempo (Taba / Sıcak Kahve)
+        // Tırıs / Orta tempo (Sıcak Eyer Kahvesi / Taba)
         segmentColor = const Color(0xFFC67D34);
       } else {
-        // Dörtnala / Hızlı tempo (Canlı Zümrüt Yeşili)
-        segmentColor = const Color(0xFF2E6F40);
+        // Dörtnala / Çok Hızlı (Ateş Kırmızısı / Adrenalin!)
+        segmentColor = const Color(0xFFD62828);
       }
 
       final paint = Paint()
