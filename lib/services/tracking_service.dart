@@ -75,7 +75,7 @@ class TrackingService {
     });
 
     // iOS Arka Plan GPS Ayarları
-    const locationSettings = AppleSettings(
+    final locationSettings = AppleSettings(
       accuracy: LocationAccuracy.bestForNavigation,
       distanceFilter: 2, // En az 2 metre hareket edince sinyal ver
       pauseLocationUpdatesAutomatically: false, // Arka planda asla uyutma!
