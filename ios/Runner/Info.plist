@@ -53,6 +53,16 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Equibelle sürüş sırasında güzergahınızı ve hızınızı kaydetmek için konumunuza ihtiyaç duyar.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Telefon kilitliyken ve cebinizdeyken rota kaydının kesilmemesi için arka plan konumu gereklidir.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Equibelle sürüş paylaşım kartını fotoğraf galerinize kaydetmek için izin gereklidir.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
