@@ -83,15 +83,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 userAgentPackageName: 'com.equibelle.equibelle',
               ),
               // Canlı Rota Çizgimiz
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: routePoints,
-                    strokeWidth: 5.0,
-                    color: AppTheme.forestGreen,
-                  ),
-                ],
-              ),
+              if (routePoints.length >= 2)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: routePoints,
+                      strokeWidth: 5.0,
+                      color: AppTheme.forestGreen,
+                    ),
+                  ],
+                ),
               // Atın Bulunduğu Son Konum İşaretçisi
               if (routePoints.isNotEmpty)
                 MarkerLayer(
@@ -245,7 +246,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                             height: 60,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF8B263E), // Zarif Bordo / Kırmızı
+                                backgroundColor: AppTheme.speedGallop, // Asil Bordo
                                 foregroundColor: Colors.white,
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(

@@ -250,17 +250,17 @@ class RoutePainter extends CustomPainter {
       final offset1 = toOffset(p1);
       final offset2 = toOffset(p2);
 
-      // Hıza göre renk seçimi (Hızlı yerler Kırmızı/Ateş!)
+      // Hıza göre asil renk seçimi
       Color segmentColor;
       if (p2.speed < 4.0) {
-        // Duruş veya çok yavaş yürüyüş (Sakin Orman Yeşili)
-        segmentColor = const Color(0xFF2E6F40);
+        // Yürüyüş / Mola: Sakin Zümrüt Yeşili
+        segmentColor = AppTheme.speedWalk;
       } else if (p2.speed < 12.0) {
-        // Tırıs / Orta tempo (Sıcak Eyer Kahvesi / Taba)
-        segmentColor = const Color(0xFFC67D34);
+        // Tırıs: Klas Deri Taba Kahvesi
+        segmentColor = AppTheme.speedTrot;
       } else {
-        // Dörtnala / Çok Hızlı (Ateş Kırmızısı / Adrenalin!)
-        segmentColor = const Color(0xFFD62828);
+        // Dörtnala: Asil Fransız Bordosu (Ateş Merlot!)
+        segmentColor = AppTheme.speedGallop;
       }
 
       final paint = Paint()
