@@ -111,22 +111,15 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildThemeChip('Krem', ShareCardTheme.cream),
-                    const SizedBox(width: 8),
-                    _buildThemeChip('Gece', ShareCardTheme.dark),
-                    const SizedBox(width: 8),
-                    _buildThemeChip('Orman', ShareCardTheme.forest),
-                    const SizedBox(width: 8),
-                    _buildThemeChip('Eyer (Taba)', ShareCardTheme.saddle),
-                    const SizedBox(width: 8),
-                    _buildThemeChip('Şeffaf (Video İçin)', ShareCardTheme.transparent),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildThemeChip('Krem (Minimal)', ShareCardTheme.cream),
+                  const SizedBox(width: 10),
+                  _buildThemeChip('Gece (Asil)', ShareCardTheme.dark),
+                  const SizedBox(width: 10),
+                  _buildThemeChip('Şeffaf (Video)', ShareCardTheme.transparent),
+                ],
               ),
               const SizedBox(height: 20),
 
