@@ -35,8 +35,8 @@ class ShareCardWidget extends StatelessWidget {
     switch (theme) {
       case ShareCardTheme.cream:
         bgColor = AppTheme.creamBg;
-        textColor = AppTheme.forestGreen;
-        secondaryTextColor = AppTheme.saddleBrown;
+        textColor = AppTheme.richSaddle;
+        secondaryTextColor = const Color(0xFF6E5336);
         break;
       case ShareCardTheme.dark:
         bgColor = AppTheme.darkCharcoal;
