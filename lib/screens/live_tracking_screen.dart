@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import '../services/tracking_service.dart';
 import '../theme/app_theme.dart';
 import 'ride_summary_screen.dart';
+import 'ride_history_screen.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   const LiveTrackingScreen({super.key});
@@ -52,6 +53,19 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       backgroundColor: AppTheme.creamBg,
       appBar: AppBar(
         title: const Text('E Q U I B E L L E'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history_rounded, size: 26),
+            tooltip: 'Sürüş Geçmişi',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RideHistoryScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Stack(
         children: [

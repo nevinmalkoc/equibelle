@@ -3,7 +3,7 @@ import '../models/ride.dart';
 import '../models/coordinate_point.dart';
 import '../theme/app_theme.dart';
 
-enum ShareCardTheme { cream, dark, transparent }
+enum ShareCardTheme { cream, dark, forest, saddle, transparent }
 
 class ShareCardWidget extends StatelessWidget {
   final Ride ride;
@@ -42,6 +42,16 @@ class ShareCardWidget extends StatelessWidget {
         bgColor = AppTheme.darkCharcoal;
         textColor = AppTheme.creamBg;
         secondaryTextColor = const Color(0xFFD4AF37); // İnce Altın
+        break;
+      case ShareCardTheme.forest:
+        bgColor = AppTheme.forestGreen;
+        textColor = AppTheme.creamBg;
+        secondaryTextColor = const Color(0xFFE5C158); // Parlak Altın
+        break;
+      case ShareCardTheme.saddle:
+        bgColor = AppTheme.saddleBrown;
+        textColor = AppTheme.creamBg;
+        secondaryTextColor = const Color(0xFFF3E5AB); // Vanilya / Krem
         break;
       case ShareCardTheme.transparent:
         bgColor = Colors.transparent;
