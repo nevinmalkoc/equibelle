@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/live_tracking_screen.dart';
+import 'screens/home_dashboard_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class EquibelleApp extends StatelessWidget {
       title: 'Equibelle',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const LiveTrackingScreen(),
+      home: const HomeDashboardScreen(),
     );
   }
 }
