@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equibelle • Offline Equestrian Trail Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rich-saddle: #493011;
+      --cream-bg: #F9F7F2;
+      --warm-cream: #EADBCE;
+      --dark-charcoal: #1F1A14;
+      --accent-gold: #C7A258;
+      --bordeaux: #721824;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--cream-bg);
+      color: var(--dark-charcoal);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header & Dil Seçimi */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 36px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .brand-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--rich-saddle);
+      text-decoration: none;
+    }
+
+    .lang-switcher button {
+      background: none;
+      border: 1px solid var(--accent-gold);
+      color: var(--rich-saddle);
+      padding: 6px 12px;
+      margin-left: 6px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .lang-switcher button.active, .lang-switcher button:hover {
+      background: var(--rich-saddle);
+      color: var(--cream-bg);
+    }
+
+    /* Hero Bölümü */
+    .hero {
+      text-align: center;
+      padding: 60px 24px 80px;
+      max-width: 840px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 18px;
+      background: rgba(73, 48, 17, 0.08);
+      color: var(--rich-saddle);
+      border-radius: 30px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--rich-saddle);
+      margin-bottom: 20px;
+      line-height: 1.25;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #5A4E42;
+      margin-bottom: 36px;
+      font-weight: 300;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--rich-saddle);
+      color: var(--cream-bg);
+      padding: 18px 38px;
+      border-radius: 36px;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 10px 25px rgba(73, 48, 17, 0.25);
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      background: #38240C;
+    }
+
+    /* Özellikler */
+    .features {
+      max-width: 1100px;
+      margin: 40px auto 80px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: #FFFFFF;
+      padding: 36px 30px;
+      border-radius: 24px;
+      border: 1px solid rgba(73, 48, 17, 0.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: var(--rich-saddle);
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: #6C6257;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* Güvenlik & Gizlilik Vurgusu */
+    .privacy-section {
+      background: #FFFFFF;
+      border-top: 1px solid rgba(73, 48, 17, 0.1);
+      border-bottom: 1px solid rgba(73, 48, 17, 0.1);
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .privacy-box {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .privacy-box h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--rich-saddle);
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .privacy-box p {
+      color: #6C6257;
+      font-size: 15px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: #8C8074;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .hero p { font-size: 16px; }
+      header { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="#" class="brand-logo">E Q U I B E L L E</a>
+    <div class="lang-switcher">
+      <button class="active" onclick="switchLang('tr')">TR</button>
+      <button onclick="switchLang('en')">EN</button>
+      <button onclick="switchLang('de')">DE</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge" id="badge-text">Orman Parkuru & Binicilik Takipçisi</div>
+      <h1 id="hero-title">Doğal, Filtresiz ve Özgür Bir Binicilik Deneyimi.</h1>
+      <p id="hero-desc">İnternet bağlantısına ihtiyaç duymadan orman rotanızı, mesafenizi ve temponuzu kaydedin. Sosyal medya için zarif 9:16 paylaşım kartları üretin.</p>
+      <a href="#how-to-install" class="cta-btn" id="cta-btn">
+        <span>📲 Uygulamayı Yükle</span>
+      </a>
+    </section>
+
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🌲</div>
+        <h3 id="f1-title">%100 Çevrimdışı (Offline)</h3>
+        <p id="f1-desc">Ormanın derinliklerinde internetiniz çekmese bile iPhone'un dahili GPS çipiyle kesintisiz konum, mesafe ve hız kaydı yapar.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎞️</div>
+        <h3 id="f2-title">TikTok & Reels Kartları</h3>
+        <p id="f2-desc">Sürüş bittiğinde haritalı, asil bordo, minimalist krem veya videolarınızın üstüne yapıştırabileceğiniz şeffaf 9:16 PNG çıktısı üretir.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🏇</div>
+        <h3 id="f3-title">Akıllı Tempo Analizi</h3>
+        <p id="f3-desc">Adım, tırıs ve dörtnala tempolarınızı hıza göre otomatik renklendirir. At durduğunda mesafeye yanlış ekleme yapmayan drift filtresine sahiptir.</p>
+      </div>
+    </section>
+
+    <section class="privacy-section">
+      <div class="privacy-box">
+        <div style="font-size: 36px; margin-bottom: 12px;">🛡️</div>
+        <h2 id="priv-title">Önce Gizlilik: Veriniz Sadece Sizde</h2>
+        <p id="priv-desc">Equibelle hiçbir konum bilginizi dış sunuculara veya üçüncü şahıslara göndermez. Tüm rotalarınız ve istatistikleriniz yalnızca telefonunuzun kendi güvenli yerel hafızasında saklanır. Kayıt olmak, hesap açmak veya kişisel bilgi vermek zorunlu değildir.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Equibelle • Developed by Nevin Malkoç • Equestrian Lifestyle & Trail Tracker</p>
+  </footer>
+
+  <script>
+    const translations = {
+      tr: {
+        badge: "Orman Parkuru & Binicilik Takipçisi",
+        title: "Doğal, Filtresiz ve Özgür Bir Binicilik Deneyimi.",
+        desc: "İnternet bağlantısına ihtiyaç duymadan orman rotanızı, mesafenizi ve temponuzu kaydedin. Sosyal medya için zarif 9:16 paylaşım kartları üretin.",
+        cta: "📲 Uygulamayı Yükle",
+        f1Title: "%100 Çevrimdışı (Offline)",
+        f1Desc: "Ormanın derinliklerinde internetiniz çekmese bile iPhone'un dahili GPS çipiyle kesintisiz konum, mesafe ve hız kaydı yapar.",
+        f2Title: "TikTok & Reels Kartları",
+        f2Desc: "Sürüş bittiğinde haritalı, asil bordo, minimalist krem veya videolarınızın üstüne yapıştırabileceğiniz şeffaf 9:16 PNG çıktısı üretir.",
+        f3Title: "Akıllı Tempo Analizi",
+        f3Desc: "Adım, tırıs ve dörtnala tempolarınızı hıza göre otomatik renklendirir. At durduğunda mesafeye yanlış ekleme yapmayan drift filtresine sahiptir.",
+        privTitle: "Önce Gizlilik: Veriniz Sadece Sizde",
+        privDesc: "Equibelle hiçbir konum bilginizi dış sunuculara veya üçüncü şahıslara göndermez. Tüm rotalarınız ve istatistikleriniz yalnızca telefonunuzun kendi güvenli yerel hafızasında saklanır. Kayıt olmak, hesap açmak veya kişisel bilgi vermek zorunlu değildir."
+      },
+      en: {
+        badge: "Forest Trail & Equestrian Tracker",
+        title: "An Authentic, Filter-Free Equestrian Lifestyle.",
+        desc: "Track your forest trail rides, distance, and pace completely offline. Generate bespoke 9:16 story cards crafted for TikTok & Reels.",
+        cta: "📲 Install the App",
+        f1Title: "100% Offline GPS",
+        f1Desc: "Record your full route seamlessly deep in the woods without requiring cellular data or mobile hotspot connection.",
+        f2Title: "Bespoke 9:16 Cards",
+        f2Desc: "Export high-resolution map overlays, royal bordeaux, minimalist cream, or transparent PNG overlays for video edits.",
+        f3Title: "Smart Pace Detection",
+        f3Desc: "Auto-detect walk, trot, and gallop with intelligent GPS drift filtering so resting time doesn't distort your total distance.",
+        privTitle: "Privacy-First: Your Data Stays Local",
+        privDesc: "Equibelle never uploads your location coordinates to any remote servers. All your tracks and memories remain encrypted in your phone's local storage. No registration required."
+      },
+      de: {
+        badge: "Wald- & Geländereiten Tracker",
+        title: "Authentisch, unberührt und voller Freiheit im Sattel.",
+        desc: "Verfolgen Sie Ihre Ausritte im Gelände vollkommen offline. Erstellen Sie elegante 9:16 Story-Karten für TikTok & Reels.",
+        cta: "📲 App Installieren",
+        f1Title: "100% Offline-Tracking",
+        f1Desc: "Zeichnen Sie Ihre Routen auch ohne Mobilfunknetz im tiefen Wald präzise über den internen GPS-Chip auf.",
+        f2Title: "Elegante 9:16 Karten",
+        f2Desc: "Exportieren Sie hochauflösende Karten-Overlays, edles Bordeaux, Creme oder transparente PNGs für Video-Layer.",
+        f3Title: "Intelligente Gangarten",
+        f3Desc: "Erkennt Schritt, Trab und Galopp automatisch mit Drift-Filter, damit Haltepausen die Kilometer nicht verfälschen.",
+        privTitle: "Datenschutz an erster Stelle",
+        privDesc: "Equibelle überträgt keinerlei GPS-Daten an externe Server. Ihre Strecken und Statistiken verbleiben ausschließlich lokal auf Ihrem Gerät. Keine Registrierungspflicht."
+      }
+    };
+
+    function switchLang(lang) {
+      document.querySelectorAll('.lang-switcher button').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const t = translations[lang];
+      document.getElementById('badge-text').innerText = t.badge;
+      document.getElementById('hero-title').innerText = t.title;
+      document.getElementById('hero-desc').innerText = t.desc;
+      document.getElementById('cta-btn').innerHTML = `<span>${t.cta}</span>`;
+      document.getElementById('f1-title').innerText = t.f1Title;
+      document.getElementById('f1-desc').innerText = t.f1Desc;
+      document.getElementById('f2-title').innerText = t.f2Title;
+      document.getElementById('f2-desc').innerText = t.f2Desc;
+      document.getElementById('f3-title').innerText = t.f3Title;
+      document.getElementById('f3-desc').innerText = t.f3Desc;
+      document.getElementById('priv-title').innerText = t.privTitle;
+      document.getElementById('priv-desc').innerText = t.privDesc;
+    }
+  </script>
+</body>
+</html>
