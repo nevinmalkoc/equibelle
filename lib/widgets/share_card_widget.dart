@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../models/ride.dart';
 import '../models/coordinate_point.dart';
 import '../theme/app_theme.dart';
 
-enum ShareCardTheme { cream, dark, transparent }
+enum ShareCardTheme {
+  cream,        // Krem
+  dark,         // Gece
+  bordeaux,     // Asil Bordo (Merlot)
+  saddleBrand,  // Logo Taba Rengi
+  mapOverlay,   // Arkada Gerçek Harita Olan Kart
+  transparent   // Şeffaf (Video Katmanı)
+}
 
 class ShareCardWidget extends StatelessWidget {
   final Ride ride;
   final ShareCardTheme theme;
+  final String? customNote;
 
   const ShareCardWidget({
     super.key,
     required this.ride,
     required this.theme,
+    this.customNote,
   });
 
   String _formatDate(DateTime date) {
@@ -31,6 +42,7 @@ class ShareCardWidget extends StatelessWidget {
     Color bgColor;
     Color textColor;
     Color secondaryTextColor;
+    bool showMap = false;
 
     switch (theme) {
       case ShareCardTheme.cream:
@@ -43,6 +55,22 @@ class ShareCardWidget extends StatelessWidget {
         textColor = AppTheme.creamBg;
         secondaryTextColor = AppTheme.accentGold;
         break;
+      case ShareCardTheme.bordeaux:
+        bgColor = const Color(0xFF4A121A); // Derin Fransız Bordosu / Merlot
+        textColor = AppTheme.creamBg;
+        secondaryTextColor = const Color(0xFFE2C4A6); // Sıcak Krem/Altın
+        break;
+      case ShareCardTheme.saddleBrand:
+        bgColor = AppTheme.richSaddle; // Logomuzun Taba Rengi (#493011)
+        textColor = AppTheme.creamBg;
+        secondaryTextColor = AppTheme.warmCream;
+        break;
+      case ShareCardTheme.mapOverlay:
+        bgColor = Colors.black;
+        textColor = Colors.white;
+        secondaryTextColor = AppTheme.warmCream;
+        showMap = true;
+        break;
       case ShareCardTheme.transparent:
         bgColor = Colors.transparent;
         textColor = Colors.white;
@@ -50,106 +78,184 @@ class ShareCardWidget extends StatelessWidget {
         break;
     }
 
+    final latLngPoints = ride.routePoints
+        .map((p) => LatLng(p.latitude, p.longitude))
+        .toList();
+
+    final centerPoint = latLngPoints.isNotEmpty
+        ? latLngPoints[latLngPoints.length ~/ 2]
+        : const LatLng(41.1167, 29.2000);
+
     return AspectRatio(
-      aspectRatio: 9 / 16, // TikTok / Instagram Hikaye Oranı
+      aspectRatio: 9 / 16, // TikTok / Instagram Hikaye Oranı (1080x1920)
       child: Container(
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
           border: theme != ShareCardTheme.transparent
-              ? Border.all(color: AppTheme.softGrey.withValues(alpha: 0.5), width: 1.5)
+              ? Border.all(color: AppTheme.softGrey.withValues(alpha: 0.4), width: 1.5)
               : null,
           boxShadow: theme != ShareCardTheme.transparent
               ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
                   )
                 ]
               : null,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
           children: [
-            // 1. EQUİBELLE BAŞLIĞI / İMZASI
-            Text(
-              'E Q U I B E L L E',
-              style: TextStyle(
-                color: textColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 4.0,
-                fontFamily: 'serif',
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'POLONEZKÖY FOREST TRAIL',
-              style: TextStyle(
-                color: secondaryTextColor,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 2.0,
-              ),
-            ),
-
-            const Spacer(),
-
-            // 2. ORTA ALAN: HIZA GÖRE RENKLENEN VEKTÖR ROTA ÇİZİMİ
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: ride.routePoints.isNotEmpty
-                    ? CustomPaint(
-                        size: Size.infinite,
-                        painter: RoutePainter(
-                          points: ride.routePoints,
-                          cardTheme: theme,
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                          'Rota çizilemedi',
-                          style: TextStyle(color: secondaryTextColor),
-                        ),
+            // 1. EĞER HARİTALI MOD SEÇİLDİYSE: ARKAYA HARİTA KOYUYORUZ
+            if (showMap && latLngPoints.isNotEmpty)
+              Positioned.fill(
+                child: ColorFiltered(
+                  // Haritayı hafif koyulaştırıp şıklaştırmak için filtre
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withValues(alpha: 0.45),
+                    BlendMode.darken,
+                  ),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: centerPoint,
+                      initialZoom: 14.5,
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.none, // Kart üstünde harita sabit dursun
                       ),
-              ),
-            ),
-
-            const Spacer(),
-
-            // 3. ALT BİLGİ ALANI: MESAFE, SÜRE, HIZ, TARİH
-            Container(
-              padding: const EdgeInsets.only(top: 16),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: secondaryTextColor.withValues(alpha: 0.25),
-                    width: 1,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.equibelle.equibelle',
+                      ),
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                            points: latLngPoints,
+                            strokeWidth: 6.0,
+                            color: AppTheme.speedGallop, // Rota çizgisi
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
+
+            // 2. KARTIN METİN VE BİLGİ İÇERİĞİ
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildBottomMetric('MESAFE', '${ride.totalDistanceKm} km', textColor, secondaryTextColor),
-                      _buildBottomMetric('SÜRE', _formatDuration(ride.totalDurationSeconds), textColor, secondaryTextColor),
-                      _buildBottomMetric('ORT. HIZ', '${ride.avgSpeedKmh} km/s', textColor, secondaryTextColor),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  // MARKA BAŞLIĞI
                   Text(
-                    _formatDate(ride.startTime),
+                    'E Q U I B E L L E',
                     style: TextStyle(
-                      color: secondaryTextColor.withValues(alpha: 0.7),
-                      fontSize: 11,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 4.5,
+                      fontFamily: 'serif',
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'POLONEZKÖY FOREST TRAIL',
+                    style: TextStyle(
+                      color: secondaryTextColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+
+                  // KULLANICI ÖZEL NOTU (Varsa şık bir alıntı olarak görünür)
+                  if (customNote != null && customNote!.trim().isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: textColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '“${customNote!.trim()}”',
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.9),
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  const Spacer(),
+
+                  // ORTA ALAN: Harita modu değilse Vektör Rota Çizimi
+                  if (!showMap)
+                    Expanded(
+                      flex: 6,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ride.routePoints.isNotEmpty
+                            ? CustomPaint(
+                                size: Size.infinite,
+                                painter: RoutePainter(
+                                  points: ride.routePoints,
+                                  cardTheme: theme,
+                                ),
+                              )
+                            : Center(
+                                child: Text(
+                                  'Rota çizilemedi',
+                                  style: TextStyle(color: secondaryTextColor),
+                                ),
+                              ),
+                      ),
+                    )
+                  else
+                    const Spacer(flex: 5),
+
+                  const Spacer(),
+
+                  // ALT METRİKLER (Mesafe, Süre, Hız, Tarih)
+                  Container(
+                    padding: const EdgeInsets.only(top: 16),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: secondaryTextColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildBottomMetric('MESAFE', '${ride.totalDistanceKm} km', textColor, secondaryTextColor),
+                            _buildBottomMetric('SÜRE', _formatDuration(ride.totalDurationSeconds), textColor, secondaryTextColor),
+                            _buildBottomMetric('ORT. HIZ', '${ride.avgSpeedKmh} km/s', textColor, secondaryTextColor),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _formatDate(ride.startTime),
+                          style: TextStyle(
+                            color: secondaryTextColor.withValues(alpha: 0.8),
+                            fontSize: 11,
+                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -189,7 +295,7 @@ class ShareCardWidget extends StatelessWidget {
   }
 }
 
-// 🎨 Matematiksel Rota Çizici (CustomPainter)
+// 🎨 Matematiksel Rota Çizici
 class RoutePainter extends CustomPainter {
   final List<CoordinatePoint> points;
   final ShareCardTheme cardTheme;
@@ -200,7 +306,6 @@ class RoutePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (points.length < 2) return;
 
-    // Koordinat sınırlarını buluyoruz (Min/Max Enlem-Boylam)
     double minLat = points.first.latitude;
     double maxLat = points.first.latitude;
     double minLng = points.first.longitude;
@@ -219,20 +324,16 @@ class RoutePainter extends CustomPainter {
     if (latRange == 0) latRange = 0.0001;
     if (lngRange == 0) lngRange = 0.0001;
 
-    // Çizimin kenarlara yapışmaması için boşluk payı (padding)
     const double padding = 20.0;
     final drawWidth = size.width - (padding * 2);
     final drawHeight = size.height - (padding * 2);
 
-    // Koordinatı ekrandaki piksel koordinatına (Offset x,y) çeviren fonksiyon
     Offset toOffset(CoordinatePoint p) {
       final x = padding + ((p.longitude - minLng) / lngRange) * drawWidth;
-      // Haritada enlem yukardan aşağı ters orantılıdır (Y ekseni ters)
       final y = padding + (1.0 - ((p.latitude - minLat) / latRange)) * drawHeight;
       return Offset(x, y);
     }
 
-    // Her iki nokta arasındaki çizgiyi hızına göre renklendirerek çiz
     for (int i = 0; i < points.length - 1; i++) {
       final p1 = points[i];
       final p2 = points[i + 1];
@@ -240,16 +341,12 @@ class RoutePainter extends CustomPainter {
       final offset1 = toOffset(p1);
       final offset2 = toOffset(p2);
 
-      // Hıza göre asil renk seçimi
       Color segmentColor;
       if (p2.speed < 4.0) {
-        // Yürüyüş / Mola: Sakin Zümrüt Yeşili
         segmentColor = AppTheme.speedWalk;
       } else if (p2.speed < 12.0) {
-        // Tırıs: Klas Deri Taba Kahvesi
         segmentColor = AppTheme.speedTrot;
       } else {
-        // Dörtnala: Asil Fransız Bordosu (Ateş Merlot!)
         segmentColor = AppTheme.speedGallop;
       }
 

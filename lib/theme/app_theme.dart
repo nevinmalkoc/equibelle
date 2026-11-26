@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Equibelle Özel Lüks Palet (Senin Seçtiğin Asil Taba & Krem Kimliği)
-  static const Color richSaddle = Color(0xFF493011);    // Zengin Süet / Sıcak Eyer Taba (Logonun Arka Planı)
+  static const Color richSaddle = Color(0xFF493011);    // Zengin Süet / Sıcak Eyer Taba (Logonun Rengi)
+  static const Color forestGreen = Color(0xFF493011);   // Ana Renk (Zengin Taba)
+  static const Color saddleBrown = Color(0xFF6E5336);   // İkincil Sıcak Deri Tonu
   static const Color creamBg = Color(0xFFF9F7F2);       // İpeksi Fildişi / Krem
   static const Color warmCream = Color(0xFFEADBCE);     // Logodaki Zarif At Çizgisi Rengi
   static const Color darkCharcoal = Color(0xFF1F1A14);  // Mat Asil Koyu Grafit

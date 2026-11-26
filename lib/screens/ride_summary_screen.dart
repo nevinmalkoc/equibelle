@@ -16,6 +16,7 @@ class RideSummaryScreen extends StatefulWidget {
 
 class _RideSummaryScreenState extends State<RideSummaryScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
+  final TextEditingController _noteController = TextEditingController();
   ShareCardTheme _selectedTheme = ShareCardTheme.cream;
   bool _isSaving = false;
 
@@ -32,23 +33,21 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
     setState(() => _isSaving = true);
 
     try {
-      // 1. Ekrandaki 9:16 kartın yüksek çözünürlüklü ekran görüntüsünü al
       final imageBytes = await _screenshotController.capture(
-        pixelRatio: 3.0, // Retina ekran kalitesi (Çok net)
+        pixelRatio: 3.0, // Retina kalitesi
       );
 
       if (imageBytes != null) {
-        // 2. iPhone Fotoğraf Galerisine kaydet
         await Gal.putImageBytes(
           imageBytes,
-          name: 'Equibelle_Ride_${DateTime.now().millisecondsSinceEpoch}',
+          name: 'Equibelle_${DateTime.now().millisecondsSinceEpoch}',
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              backgroundColor: AppTheme.forestGreen,
-              content: Text('Kart başarıyla Fotoğraflar\'a kaydedildi! 🐴✨'),
+              backgroundColor: AppTheme.richSaddle,
+              content: Text('Kart Fotoğraflar\'a kaydedildi! 🐴✨'),
             ),
           );
         }
@@ -80,13 +79,16 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Özet İstatistik Satırları
+              // 1. ÖZET METRİKLERİ
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: AppTheme.softGrey),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
+                  ],
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -98,50 +100,85 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-
-              // Tema Seçim Hapları
-              const Text(
-                'PAYLAŞIM KARTI TEMASI',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildThemeChip('Krem (Minimal)', ShareCardTheme.cream),
-                  const SizedBox(width: 10),
-                  _buildThemeChip('Gece (Asil)', ShareCardTheme.dark),
-                  const SizedBox(width: 10),
-                  _buildThemeChip('Şeffaf (Video)', ShareCardTheme.transparent),
-                ],
-              ),
               const SizedBox(height: 20),
 
-              // 9:16 PAYLAŞIM KARTI ÖNİZLEMESİ
+              // 2. ÖZEL NOT EKLEME ALANI
+              TextField(
+                controller: _noteController,
+                maxLength: 60,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  hintText: 'Sürüşe özel not ekle (Örn: Rüzgar çok keyifliydi...)',
+                  hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
+                  filled: true,
+                  fillColor: Colors.white,
+                  prefixIcon: const Icon(Icons.edit_note_rounded, color: AppTheme.richSaddle),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: AppTheme.softGrey),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: AppTheme.softGrey),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // 3. TEMA SEÇİM ÇUBUĞU (Yatay Kaydırılabilir 6 Tema)
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'PAYLAŞIM KARTI TEMASI',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildThemeChip('🗺️ Harita', ShareCardTheme.mapOverlay),
+                    const SizedBox(width: 8),
+                    _buildThemeChip('🍦 Krem', ShareCardTheme.cream),
+                    const SizedBox(width: 8),
+                    _buildThemeChip('🍷 Bordo', ShareCardTheme.bordeaux),
+                    const SizedBox(width: 8),
+                    _buildThemeChip('👜 Taba (Logo)', ShareCardTheme.saddleBrand),
+                    const SizedBox(width: 8),
+                    _buildThemeChip('🌑 Gece', ShareCardTheme.dark),
+                    const SizedBox(width: 8),
+                    _buildThemeChip('🪟 Şeffaf (Video)', ShareCardTheme.transparent),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 22),
+
+              // 4. 9:16 PAYLAŞIM KARTI ÖNİZLEMESİ
               Screenshot(
                 controller: _screenshotController,
                 child: ShareCardWidget(
                   ride: widget.ride,
                   theme: _selectedTheme,
+                  customNote: _noteController.text,
                 ),
               ),
               const SizedBox(height: 28),
 
-              // GALERİYE KAYDET BUTONU
+              // 5. GALERİYE KAYDET BUTONU
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.forestGreen,
+                    backgroundColor: AppTheme.richSaddle,
                     foregroundColor: AppTheme.creamBg,
-                    elevation: 5,
+                    elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
@@ -171,17 +208,14 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
   Widget _buildStat(String label, String value) {
     return Column(
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: Colors.black45),
-        ),
+        Text(label, style: const TextStyle(fontSize: 11, color: Colors.black45)),
         const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: AppTheme.forestGreen,
+            color: AppTheme.richSaddle,
           ),
         ),
       ],
@@ -193,7 +227,7 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
     return ChoiceChip(
       label: Text(title),
       selected: isSelected,
-      selectedColor: AppTheme.forestGreen,
+      selectedColor: AppTheme.richSaddle,
       labelStyle: TextStyle(
         color: isSelected ? Colors.white : Colors.black87,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
