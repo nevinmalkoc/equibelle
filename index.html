@@ -218,8 +218,8 @@
     <section class="hero">
       <div class="hero-badge" id="badge-text">Orman Parkuru & Binicilik Takipçisi</div>
       <h1 id="hero-title">Doğal, Filtresiz ve Özgür Bir Binicilik Deneyimi.</h1>
-      <p id="hero-desc">İnternet bağlantısına ihtiyaç duymadan orman rotanızı, mesafenizi ve temponuzu kaydedin. Sosyal medya için zarif 9:16 paylaşım kartları üretin.</p>
-      <a href="#how-to-install" class="cta-btn" id="cta-btn">
+      <p id="hero-desc">İnternet bağlantısına ihtiyaç duymadan orman rotanızı, mesafenizi ve temponuzu kaydedin. Sosyal medya için zarif 9:16 biniş kartları üretin.</p>
+      <a href="javascript:void(0)" onclick="openModal()" class="cta-btn" id="cta-btn">
         <span>📲 Uygulamayı Yükle</span>
       </a>
     </section>
@@ -251,13 +251,50 @@
         <p id="priv-desc">Equibelle hiçbir konum bilginizi dış sunuculara veya üçüncü şahıslara göndermez. Tüm rotalarınız ve istatistikleriniz yalnızca telefonunuzun kendi güvenli yerel hafızasında saklanır. Kayıt olmak, hesap açmak veya kişisel bilgi vermek zorunlu değildir.</p>
       </div>
     </section>
+
+    <!-- Öneri & Görüş / Feedback Bölümü -->
+    <section style="max-width: 680px; margin: 60px auto; padding: 0 24px; text-align: center;">
+      <h2 style="font-family: 'Cinzel', serif; color: var(--rich-saddle); font-size: 26px; margin-bottom: 12px;">Öneri & Görüşleriniz</h2>
+      <p style="color: #6C6257; font-size: 14px; margin-bottom: 24px;">Equibelle'i binicilik topluluğuyla birlikte geliştiriyoruz. Uygulamada görmek istediğiniz özellikleri bizimle paylaşın.</p>
+      
+      <form action="mailto:nevinmalkoc@hotmail.com" method="post" enctype="text/plain" style="display: flex; flex-direction: column; gap: 14px;">
+        <input type="text" name="name" placeholder="İsminiz (Opsiyonel)" style="padding: 14px 18px; border-radius: 12px; border: 1px solid var(--accent-gold); background: #FFF; font-family: inherit; font-size: 14px;">
+        <textarea name="feedback" rows="4" placeholder="Öneriniz veya düşünceleriniz..." required style="padding: 14px 18px; border-radius: 12px; border: 1px solid var(--accent-gold); background: #FFF; font-family: inherit; font-size: 14px; resize: none;"></textarea>
+        <button type="submit" class="cta-btn" style="justify-content: center; cursor: pointer; border: none; font-size: 15px;">
+          <span>Görüşü Gönder ✉️</span>
+        </button>
+      </form>
+    </section>
   </main>
 
   <footer>
     <p>© 2026 Equibelle • Developed by Nevin Malkoç • Equestrian Lifestyle & Trail Tracker</p>
   </footer>
 
+  <!-- İndirme / Erken Erişim Modal Penceresi -->
+  <div id="download-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: var(--cream-bg); padding: 36px 28px; border-radius: 24px; max-width: 440px; margin: 20px; text-align: center; border: 1px solid var(--accent-gold); box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+      <div style="font-size: 40px; margin-bottom: 12px;">🏇</div>
+      <h3 style="font-family: 'Cinzel', serif; color: var(--rich-saddle); font-size: 22px; margin-bottom: 10px;">Equibelle Kapalı Beta</h3>
+      <p style="color: #6C6257; font-size: 14px; margin-bottom: 24px; line-height: 1.6;">
+        Uygulamamız şu anda Polonezköy orman parkurlarında aktif olarak test edilmektedir. Genel kullanıma açıldığında ilk bildirim alan binicilerden olmak veya test sürümüne katılmak için bize yazın!
+      </p>
+      <a href="mailto:nevinmalkoc@hotmail.com?subject=Equibelle%20Beta%20Erişim%20Talebi" class="cta-btn" style="width: 100%; justify-content: center; margin-bottom: 12px; font-size: 14px;">
+        Erken Erişim Talep Et ✉️
+      </a>
+      <button onclick="closeModal()" style="background: none; border: none; color: #8C8074; cursor: pointer; font-size: 13px; text-decoration: underline;">
+        Kapat
+      </button>
+    </div>
+  </div>
+
   <script>
+    function openModal() {
+      document.getElementById('download-modal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('download-modal').style.display = 'none';
+    }
     const translations = {
       tr: {
         badge: "Orman Parkuru & Binicilik Takipçisi",
