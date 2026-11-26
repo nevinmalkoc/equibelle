@@ -219,9 +219,15 @@
       <div class="hero-badge" id="badge-text">Orman Parkuru & Binicilik Takipçisi</div>
       <h1 id="hero-title">Doğal, Filtresiz ve Özgür Bir Binicilik Deneyimi.</h1>
       <p id="hero-desc">İnternet bağlantısına ihtiyaç duymadan orman rotanızı, mesafenizi ve temponuzu kaydedin. Sosyal medya için zarif 9:16 biniş kartları üretin.</p>
-      <a href="./app/" class="cta-btn" id="cta-btn">
-        <span>📲 Uygulamayı Başlat & Yükle</span>
-      </a>
+      
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="./app/" class="cta-btn" id="cta-btn">
+          <span>🏇 Uygulamayı Başlat (Web)</span>
+        </a>
+        <a href="#install-guide" class="cta-btn" style="background: transparent; color: var(--rich-saddle); border: 2px solid var(--rich-saddle); box-shadow: none;">
+          <span>📲 Telefona Nasıl Yüklenir?</span>
+        </a>
+      </div>
     </section>
 
     <section class="features">
@@ -252,7 +258,37 @@
       </div>
     </section>
 
-    <!-- Öneri & Görüş / Feedback Bölümü -->
+    <!-- Telefona Kolay Kurulum Rehberi (App Store Gerektirmez) -->
+    <section id="install-guide" style="max-width: 900px; margin: 40px auto 70px; padding: 0 24px;">
+      <div style="background: #FFFFFF; border-radius: 24px; padding: 40px 30px; border: 1px solid rgba(73,48,17,0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+        <h2 style="font-family: 'Cinzel', serif; color: var(--rich-saddle); font-size: 26px; text-align: center; margin-bottom: 8px;">Telefona Tek Tıkla Nasıl Yüklenir?</h2>
+        <p style="text-align: center; color: #6C6257; font-size: 14px; margin-bottom: 36px;">Mağaza aramalarına veya ekstra indirmelere gerek yok; saniyeler içinde ana ekranınıza ekleyin.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+          <!-- iOS Rehber -->
+          <div style="background: var(--cream-bg); padding: 24px; border-radius: 18px; border: 1px solid var(--accent-gold);">
+            <div style="font-size: 24px; margin-bottom: 8px;">🍎 iPhone (Safari)</div>
+            <ol style="margin-left: 20px; font-size: 14px; color: #493011; line-height: 1.8;">
+              <li>Yukarıdaki <strong>"Uygulamayı Başlat"</strong> butonuna basın.</li>
+              <li>Safari'nin altındaki <strong>Paylaş (Kare + Ok)</strong> simgesine dokunun.</li>
+              <li>Aşağı kaydırıp <strong>"Ana Ekrana Ekle"</strong> seçeneğini seçin.</li>
+              <li>Artık Equibelle kendi logosuyla ana ekranınızda hazır!</li>
+            </ol>
+          </div>
+
+          <!-- Android Rehber -->
+          <div style="background: var(--cream-bg); padding: 24px; border-radius: 18px; border: 1px solid var(--accent-gold);">
+            <div style="font-size: 24px; margin-bottom: 8px;">🤖 Android (Chrome)</div>
+            <ol style="margin-left: 20px; font-size: 14px; color: #493011; line-height: 1.8;">
+              <li><strong>"Uygulamayı Başlat"</strong> butonuna basarak uygulamayı açın.</li>
+              <li>Chrome'un sağ üstündeki <strong>Üç Nokta (⋮)</strong> menüsüne dokunun.</li>
+              <li><strong>"Uygulamayı Yükle"</strong> veya <strong>"Ana Ekrana Ekle"</strong> deyin.</li>
+              <li>Uygulama telefonunuza anında kurulur!</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
     <section style="max-width: 680px; margin: 60px auto; padding: 0 24px; text-align: center;">
       <h2 style="font-family: 'Cinzel', serif; color: var(--rich-saddle); font-size: 26px; margin-bottom: 12px;">Öneri & Görüşleriniz</h2>
       <p style="color: #6C6257; font-size: 14px; margin-bottom: 24px;">Equibelle'i binicilik topluluğuyla birlikte geliştiriyoruz. Uygulamada görmek istediğiniz özellikleri bizimle paylaşın.</p>
@@ -313,12 +349,12 @@
       en: {
         badge: "Forest Trail & Equestrian Tracker",
         title: "An Authentic, Filter-Free Equestrian Lifestyle.",
-        desc: "Track your forest trail rides, distance, and pace completely offline. Generate bespoke 9:16 story cards crafted for TikTok & Reels.",
-        cta: "📲 Install the App",
+        desc: "Track your forest trail rides, distance, and pace completely offline. Generate bespoke 9:16 story cards crafted for your memories.",
+        cta: "🏇 Launch Web App",
         f1Title: "100% Offline GPS",
         f1Desc: "Record your full route seamlessly deep in the woods without requiring cellular data or mobile hotspot connection.",
         f2Title: "Bespoke Ride Cards (9:16)",
-        f2Desc: "Export high-resolution map overlays, royal bordeaux, minimalist cream, or transparent overlays for your memories and story highlights.",
+        f2Desc: "Export high-resolution map overlays, custom photo backgrounds, royal bordeaux, minimalist cream, or transparent overlays.",
         f3Title: "Smart Pace Detection",
         f3Desc: "Auto-detect walk, trot, and gallop with intelligent GPS drift filtering so resting time doesn't distort your total distance.",
         privTitle: "Privacy-First: Your Data Stays Local",
@@ -327,12 +363,12 @@
       de: {
         badge: "Wald- & Geländereiten Tracker",
         title: "Authentisch, unberührt und voller Freiheit im Sattel.",
-        desc: "Verfolgen Sie Ihre Ausritte im Gelände vollkommen offline. Erstellen Sie elegante 9:16 Story-Karten für TikTok & Reels.",
-        cta: "📲 App Installieren",
+        desc: "Verfolgen Sie Ihre Ausritte im Gelände vollkommen offline. Erstellen Sie elegante 9:16 Story-Karten.",
+        cta: "🏇 Web-App Starten",
         f1Title: "100% Offline-Tracking",
         f1Desc: "Zeichnen Sie Ihre Routen auch ohne Mobilfunknetz im tiefen Wald präzise über den internen GPS-Chip auf.",
-        f2Title: "Elegante 9:16 Karten",
-        f2Desc: "Exportieren Sie hochauflösende Karten-Overlays, edles Bordeaux, Creme oder transparente PNGs für Video-Layer.",
+        f2Title: "Elegante Reitkarten (9:16)",
+        f2Desc: "Exportieren Sie hochauflösende Karten-Overlays, eigene Fotohintergründe, edles Bordeaux, Creme oder transparente PNGs.",
         f3Title: "Intelligente Gangarten",
         f3Desc: "Erkennt Schritt, Trab und Galopp automatisch mit Drift-Filter, damit Haltepausen die Kilometer nicht verfälschen.",
         privTitle: "Datenschutz an erster Stelle",
