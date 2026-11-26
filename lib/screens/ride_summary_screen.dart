@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:gal/gal.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/ride.dart';
 import '../theme/app_theme.dart';
 import '../widgets/share_card_widget.dart';
@@ -18,24 +20,32 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
   final TextEditingController _noteController = TextEditingController();
   ShareCardTheme _selectedTheme = ShareCardTheme.cream;
+  File? _customPhotoFile;
   bool _isSaving = false;
 
   String _formatDuration(int seconds) {
     final hours = seconds ~/ 3600;
     final minutes = (seconds % 3600) ~/ 60;
-    if (hours > 0) {
-      return '${hours}sa ${minutes}dk';
-    }
+    if (hours > 0) return '${hours}sa ${minutes}dk';
     return '${minutes}dk';
+  }
+
+  Future<void> _pickPhoto() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _customPhotoFile = File(picked.path);
+        _selectedTheme = ShareCardTheme.photoBackground; // Otomatik olarak fotoğraflı moda al
+      });
+    }
   }
 
   Future<void> _saveToGallery() async {
     setState(() => _isSaving = true);
 
     try {
-      final imageBytes = await _screenshotController.capture(
-        pixelRatio: 3.0, // Retina kalitesi
-      );
+      final imageBytes = await _screenshotController.capture(pixelRatio: 3.0);
 
       if (imageBytes != null) {
         await Gal.putImageBytes(
@@ -102,7 +112,7 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
               ),
               const SizedBox(height: 20),
 
-              // 2. ÖZEL NOT EKLEME ALANI
+              // 2. ÖZEL NOT ALANI
               TextField(
                 controller: _noteController,
                 maxLength: 60,
@@ -123,9 +133,26 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
+
+              // 3. FOTOĞRAF SEÇ BUTONU
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.richSaddle,
+                  side: const BorderSide(color: AppTheme.richSaddle),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
+                onPressed: _pickPhoto,
+                icon: const Icon(Icons.add_photo_alternate_rounded),
+                label: Text(
+                  _customPhotoFile == null ? 'Fotoğrafını Arka Plan Yap 📸' : 'Fotoğrafı Değiştir 🔄',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
               const SizedBox(height: 16),
 
-              // 3. TEMA SEÇİM ÇUBUĞU (Yatay Kaydırılabilir 6 Tema)
+              // 4. TEMA SEÇİM ÇUBUĞU (7 TEMA)
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -143,6 +170,8 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
+                    _buildThemeChip('📸 Fotoğraflı', ShareCardTheme.photoBackground),
+                    const SizedBox(width: 8),
                     _buildThemeChip('🗺️ Harita', ShareCardTheme.mapOverlay),
                     const SizedBox(width: 8),
                     _buildThemeChip('🍦 Krem', ShareCardTheme.cream),
@@ -159,18 +188,19 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
               ),
               const SizedBox(height: 22),
 
-              // 4. 9:16 PAYLAŞIM KARTI ÖNİZLEMESİ
+              // 5. 9:16 PAYLAŞIM KARTI ÖNİZLEMESİ
               Screenshot(
                 controller: _screenshotController,
                 child: ShareCardWidget(
                   ride: widget.ride,
                   theme: _selectedTheme,
                   customNote: _noteController.text,
+                  customPhotoFile: _customPhotoFile,
                 ),
               ),
               const SizedBox(height: 28),
 
-              // 5. GALERİYE KAYDET BUTONU
+              // 6. GALERİYE KAYDET BUTONU
               SizedBox(
                 width: double.infinity,
                 height: 56,

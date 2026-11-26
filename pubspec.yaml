@@ -43,6 +43,7 @@ dependencies:
   gal: ^3.0.1
   share_plus: ^13.3.1
   shared_preferences: ^2.5.6
+  image_picker: ^1.2.4
 
 dev_dependencies:
   flutter_test:

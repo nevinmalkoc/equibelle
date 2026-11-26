@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -6,24 +7,27 @@ import '../models/coordinate_point.dart';
 import '../theme/app_theme.dart';
 
 enum ShareCardTheme {
-  cream,        // Krem
-  dark,         // Gece
-  bordeaux,     // Asil Bordo (Merlot)
-  saddleBrand,  // Logo Taba Rengi
-  mapOverlay,   // Arkada Gerçek Harita Olan Kart
-  transparent   // Şeffaf (Video Katmanı)
+  cream,           // Krem
+  dark,            // Gece
+  bordeaux,        // Asil Bordo (Merlot)
+  saddleBrand,     // Logo Taba Rengi
+  mapOverlay,      // Arkada Gerçek Harita
+  photoBackground, // Kendi Fotoğrafını Yüklediğin Kart!
+  transparent      // Şeffaf (Video Katmanı)
 }
 
 class ShareCardWidget extends StatelessWidget {
   final Ride ride;
   final ShareCardTheme theme;
   final String? customNote;
+  final File? customPhotoFile;
 
   const ShareCardWidget({
     super.key,
     required this.ride,
     required this.theme,
     this.customNote,
+    this.customPhotoFile,
   });
 
   String _formatDate(DateTime date) {
@@ -43,6 +47,7 @@ class ShareCardWidget extends StatelessWidget {
     Color textColor;
     Color secondaryTextColor;
     bool showMap = false;
+    bool showPhoto = false;
 
     switch (theme) {
       case ShareCardTheme.cream:
@@ -56,12 +61,12 @@ class ShareCardWidget extends StatelessWidget {
         secondaryTextColor = AppTheme.accentGold;
         break;
       case ShareCardTheme.bordeaux:
-        bgColor = const Color(0xFF4A121A); // Derin Fransız Bordosu / Merlot
+        bgColor = const Color(0xFF4A121A);
         textColor = AppTheme.creamBg;
-        secondaryTextColor = const Color(0xFFE2C4A6); // Sıcak Krem/Altın
+        secondaryTextColor = const Color(0xFFE2C4A6);
         break;
       case ShareCardTheme.saddleBrand:
-        bgColor = AppTheme.richSaddle; // Logomuzun Taba Rengi (#493011)
+        bgColor = AppTheme.richSaddle;
         textColor = AppTheme.creamBg;
         secondaryTextColor = AppTheme.warmCream;
         break;
@@ -70,6 +75,12 @@ class ShareCardWidget extends StatelessWidget {
         textColor = Colors.white;
         secondaryTextColor = AppTheme.warmCream;
         showMap = true;
+        break;
+      case ShareCardTheme.photoBackground:
+        bgColor = Colors.black;
+        textColor = Colors.white;
+        secondaryTextColor = const Color(0xFFE5E2DA);
+        showPhoto = true;
         break;
       case ShareCardTheme.transparent:
         bgColor = Colors.transparent;
@@ -87,7 +98,7 @@ class ShareCardWidget extends StatelessWidget {
         : const LatLng(41.1167, 29.2000);
 
     return AspectRatio(
-      aspectRatio: 9 / 16, // TikTok / Instagram Hikaye Oranı (1080x1920)
+      aspectRatio: 9 / 16, // TikTok / Instagram Hikaye Oranı
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
@@ -108,11 +119,27 @@ class ShareCardWidget extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // 1. EĞER HARİTALI MOD SEÇİLDİYSE: ARKAYA HARİTA KOYUYORUZ
+            // 1. KULLANICININ SEÇTİĞİ ARKA PLAN FOTOĞRAFI
+            if (showPhoto && customPhotoFile != null)
+              Positioned.fill(
+                child: Image.file(
+                  customPhotoFile!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+            // Fotoğraf varsa üzerine şık karanlık katman (yazılar ve rota parlasın diye)
+            if (showPhoto)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.40),
+                ),
+              ),
+
+            // 2. HARİTA MODU SEÇİLDİYSE
             if (showMap && latLngPoints.isNotEmpty)
               Positioned.fill(
                 child: ColorFiltered(
-                  // Haritayı hafif koyulaştırıp şıklaştırmak için filtre
                   colorFilter: ColorFilter.mode(
                     Colors.black.withValues(alpha: 0.45),
                     BlendMode.darken,
@@ -122,7 +149,7 @@ class ShareCardWidget extends StatelessWidget {
                       initialCenter: centerPoint,
                       initialZoom: 14.5,
                       interactionOptions: const InteractionOptions(
-                        flags: InteractiveFlag.none, // Kart üstünde harita sabit dursun
+                        flags: InteractiveFlag.none,
                       ),
                     ),
                     children: [
@@ -135,7 +162,7 @@ class ShareCardWidget extends StatelessWidget {
                           Polyline(
                             points: latLngPoints,
                             strokeWidth: 6.0,
-                            color: AppTheme.speedGallop, // Rota çizgisi
+                            color: AppTheme.speedGallop,
                           ),
                         ],
                       ),
@@ -144,13 +171,12 @@ class ShareCardWidget extends StatelessWidget {
                 ),
               ),
 
-            // 2. KARTIN METİN VE BİLGİ İÇERİĞİ
+            // 3. KARTIN YAZILARI VE ROTA ÇİZİMİ
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // MARKA BAŞLIĞI
                   Text(
                     'E Q U I B E L L E',
                     style: TextStyle(
@@ -172,13 +198,13 @@ class ShareCardWidget extends StatelessWidget {
                     ),
                   ),
 
-                  // KULLANICI ÖZEL NOTU (Varsa şık bir alıntı olarak görünür)
+                  // Özel Not
                   if (customNote != null && customNote!.trim().isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: textColor.withValues(alpha: 0.08),
+                        color: textColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -187,7 +213,7 @@ class ShareCardWidget extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: textColor.withValues(alpha: 0.9),
+                          color: textColor.withValues(alpha: 0.95),
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
                         ),
@@ -197,7 +223,7 @@ class ShareCardWidget extends StatelessWidget {
 
                   const Spacer(),
 
-                  // ORTA ALAN: Harita modu değilse Vektör Rota Çizimi
+                  // ROTA ÇİZİMİ (Fotoğraflı veya Düz modlarda)
                   if (!showMap)
                     Expanded(
                       flex: 6,
@@ -224,13 +250,13 @@ class ShareCardWidget extends StatelessWidget {
 
                   const Spacer(),
 
-                  // ALT METRİKLER (Mesafe, Süre, Hız, Tarih)
+                  // ALT METRİKLER
                   Container(
                     padding: const EdgeInsets.only(top: 16),
                     decoration: BoxDecoration(
                       border: Border(
                         top: BorderSide(
-                          color: secondaryTextColor.withValues(alpha: 0.3),
+                          color: secondaryTextColor.withValues(alpha: 0.35),
                           width: 1,
                         ),
                       ),
@@ -249,7 +275,7 @@ class ShareCardWidget extends StatelessWidget {
                         Text(
                           _formatDate(ride.startTime),
                           style: TextStyle(
-                            color: secondaryTextColor.withValues(alpha: 0.8),
+                            color: secondaryTextColor.withValues(alpha: 0.85),
                             fontSize: 11,
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.w500,
@@ -342,12 +368,17 @@ class RoutePainter extends CustomPainter {
       final offset2 = toOffset(p2);
 
       Color segmentColor;
-      if (p2.speed < 4.0) {
-        segmentColor = AppTheme.speedWalk;
-      } else if (p2.speed < 12.0) {
-        segmentColor = AppTheme.speedTrot;
+      if (cardTheme == ShareCardTheme.photoBackground) {
+        // Fotoğraf arkasındayken altın/beyaz neon gibi parlasın
+        segmentColor = p2.speed > 12.0 ? const Color(0xFFFF4D4D) : const Color(0xFFF9F7F2);
       } else {
-        segmentColor = AppTheme.speedGallop;
+        if (p2.speed < 4.0) {
+          segmentColor = AppTheme.speedWalk;
+        } else if (p2.speed < 12.0) {
+          segmentColor = AppTheme.speedTrot;
+        } else {
+          segmentColor = AppTheme.speedGallop;
+        }
       }
 
       final paint = Paint()
