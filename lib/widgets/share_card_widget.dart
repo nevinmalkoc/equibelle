@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -20,14 +21,18 @@ class ShareCardWidget extends StatelessWidget {
   final Ride ride;
   final ShareCardTheme theme;
   final String? customNote;
+  final String? locationName;
   final File? customPhotoFile;
+  final Uint8List? customPhotoBytes;
 
   const ShareCardWidget({
     super.key,
     required this.ride,
     required this.theme,
     this.customNote,
+    this.locationName,
     this.customPhotoFile,
+    this.customPhotoBytes,
   });
 
   String _formatDate(DateTime date) {
@@ -120,12 +125,17 @@ class ShareCardWidget extends StatelessWidget {
         child: Stack(
           children: [
             // 1. KULLANICININ SEÇTİĞİ ARKA PLAN FOTOĞRAFI
-            if (showPhoto && customPhotoFile != null)
+            if (showPhoto && (customPhotoBytes != null || customPhotoFile != null))
               Positioned.fill(
-                child: Image.file(
-                  customPhotoFile!,
-                  fit: BoxFit.cover,
-                ),
+                child: customPhotoBytes != null
+                    ? Image.memory(
+                        customPhotoBytes!,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.file(
+                        customPhotoFile!,
+                        fit: BoxFit.cover,
+                      ),
               ),
 
             // Fotoğraf varsa üzerine şık karanlık katman (yazılar ve rota parlasın diye)
@@ -189,7 +199,9 @@ class ShareCardWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'POLONEZKÖY FOREST TRAIL',
+                    (locationName != null && locationName!.trim().isNotEmpty)
+                        ? locationName!.trim().toUpperCase()
+                        : 'EQUESTRIAN TRAIL RIDE',
                     style: TextStyle(
                       color: secondaryTextColor,
                       fontSize: 10,

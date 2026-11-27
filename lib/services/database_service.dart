@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/ride.dart';
@@ -11,6 +14,10 @@ class DatabaseService {
 
   static Database? _database;
 
+  // Web ortamı için bellek ve SharedPreferences önbelleği
+  final List<Ride> _webRides = [];
+  bool _webLoaded = false;
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
@@ -18,7 +25,6 @@ class DatabaseService {
   }
 
   Future<Database> _initDatabase() async {
-    // Telefonun güvenli yerel dosya yolunu alıyoruz
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'equibelle_tracks.db');
 
@@ -58,20 +64,114 @@ class DatabaseService {
     ''');
   }
 
+  // --- WEB İÇİN VERİ SAKLAMA YARDIMCILARI ---
+  Future<void> _ensureWebLoaded() async {
+    if (!_webLoaded) {
+      final prefs = await SharedPreferences.getInstance();
+      final String? jsonStr = prefs.getString('equibelle_web_rides');
+      if (jsonStr != null) {
+        try {
+          final List<dynamic> decoded = jsonDecode(jsonStr);
+          _webRides.clear();
+          for (var item in decoded) {
+            final pointsData = (item['points'] as List<dynamic>? ?? [])
+                .map((p) => CoordinatePoint.fromMap(Map<String, dynamic>.from(p)))
+                .toList();
+            _webRides.add(Ride.fromMap(Map<String, dynamic>.from(item), points: pointsData));
+          }
+        } catch (_) {}
+      }
+      _webLoaded = true;
+    }
+  }
+
+  Future<void> _saveWebRides() async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = _webRides.map((r) {
+      final map = r.toMap();
+      map['points'] = r.routePoints.map((p) => p.toMap()).toList();
+      return map;
+    }).toList();
+    await prefs.setString('equibelle_web_rides', jsonEncode(list));
+  }
+
   // Yeni bir sürüş başlatıldığında veritabanına ekle ve oluşturulan ID'yi dön
   Future<int> insertRide(Ride ride) async {
+    if (kIsWeb) {
+      await _ensureWebLoaded();
+      final newId = _webRides.isEmpty
+          ? 1
+          : (_webRides.map((r) => r.id ?? 0).reduce((a, b) => a > b ? a : b) + 1);
+      final newRide = Ride(
+        id: newId,
+        startTime: ride.startTime,
+        endTime: ride.endTime,
+        totalDistanceKm: ride.totalDistanceKm,
+        totalDurationSeconds: ride.totalDurationSeconds,
+        movingDurationSeconds: ride.movingDurationSeconds,
+        avgSpeedKmh: ride.avgSpeedKmh,
+        maxSpeedKmh: ride.maxSpeedKmh,
+        routePoints: [],
+      );
+      _webRides.insert(0, newRide);
+      await _saveWebRides();
+      return newId;
+    }
+
     final db = await database;
     return await db.insert('rides', ride.toMap());
   }
 
   // Sürüş sırasında her yeni GPS koordinatını bu sürüşe ekle
   Future<void> insertCoordinatePoint(CoordinatePoint point) async {
+    if (kIsWeb) {
+      await _ensureWebLoaded();
+      final index = _webRides.indexWhere((r) => r.id == point.rideId);
+      if (index != -1) {
+        final existing = _webRides[index];
+        final updatedPoints = List<CoordinatePoint>.from(existing.routePoints)..add(point);
+        _webRides[index] = Ride(
+          id: existing.id,
+          startTime: existing.startTime,
+          endTime: existing.endTime,
+          totalDistanceKm: existing.totalDistanceKm,
+          totalDurationSeconds: existing.totalDurationSeconds,
+          movingDurationSeconds: existing.movingDurationSeconds,
+          avgSpeedKmh: existing.avgSpeedKmh,
+          maxSpeedKmh: existing.maxSpeedKmh,
+          routePoints: updatedPoints,
+        );
+      }
+      return;
+    }
+
     final db = await database;
     await db.insert('coordinate_points', point.toMap());
   }
 
   // Sürüş bittiğinde toplam süre, km ve ortalama hızları güncelle
   Future<void> updateRide(Ride ride) async {
+    if (kIsWeb) {
+      await _ensureWebLoaded();
+      final index = _webRides.indexWhere((r) => r.id == ride.id);
+      if (index != -1) {
+        final existing = _webRides[index];
+        _webRides[index] = Ride(
+          id: ride.id,
+          startTime: ride.startTime,
+          endTime: ride.endTime,
+          totalDistanceKm: ride.totalDistanceKm,
+          totalDurationSeconds: ride.totalDurationSeconds,
+          movingDurationSeconds: ride.movingDurationSeconds,
+          avgSpeedKmh: ride.avgSpeedKmh,
+          maxSpeedKmh: ride.maxSpeedKmh,
+          routePoints: existing.routePoints.isNotEmpty ? existing.routePoints : ride.routePoints,
+        );
+        await _saveWebRides();
+      }
+      return;
+    }
+
     final db = await database;
     await db.update(
       'rides',
@@ -83,6 +183,11 @@ class DatabaseService {
 
   // Geçmiş tüm sürüşleri tarihe göre en yeniden en eskiye sıralayarak getir
   Future<List<Ride>> getAllRides() async {
+    if (kIsWeb) {
+      await _ensureWebLoaded();
+      return List<Ride>.from(_webRides);
+    }
+
     final db = await database;
     final List<Map<String, dynamic>> rideMaps = await db.query(
       'rides',
@@ -107,6 +212,13 @@ class DatabaseService {
 
   // İstenmeyen bir sürüşü silmek için
   Future<void> deleteRide(int rideId) async {
+    if (kIsWeb) {
+      await _ensureWebLoaded();
+      _webRides.removeWhere((r) => r.id == rideId);
+      await _saveWebRides();
+      return;
+    }
+
     final db = await database;
     await db.delete('rides', where: 'id = ?', whereArgs: [rideId]);
     await db.delete('coordinate_points', where: 'ride_id = ?', whereArgs: [rideId]);

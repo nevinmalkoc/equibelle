@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../models/coordinate_point.dart';
@@ -74,13 +75,21 @@ class TrackingService {
       }
     });
 
-    // iOS Arka Plan GPS Ayarları
-    final locationSettings = AppleSettings(
-      accuracy: LocationAccuracy.bestForNavigation,
-      distanceFilter: 2, // En az 2 metre hareket edince sinyal ver
-      pauseLocationUpdatesAutomatically: false, // Arka planda asla uyutma!
-      showBackgroundLocationIndicator: true, // Üstte mavi konum hapı görünsün
-    );
+    // iOS / Web Konum Ayarları
+    LocationSettings locationSettings;
+    if (kIsWeb) {
+      locationSettings = const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 2,
+      );
+    } else {
+      locationSettings = AppleSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 2, // En az 2 metre hareket edince sinyal ver
+        pauseLocationUpdatesAutomatically: false, // Arka planda asla uyutma!
+        showBackgroundLocationIndicator: true, // Üstte mavi konum hapı görünsün
+      );
+    }
 
     // Canlı GPS Dinleme Akışı (Stream)
     _positionStream = Geolocator.getPositionStream(

@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:gal/gal.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/ride.dart';
 import '../theme/app_theme.dart';
@@ -19,8 +21,10 @@ class RideSummaryScreen extends StatefulWidget {
 class _RideSummaryScreenState extends State<RideSummaryScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
   final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
   ShareCardTheme _selectedTheme = ShareCardTheme.cream;
   File? _customPhotoFile;
+  Uint8List? _customPhotoBytes;
   bool _isSaving = false;
 
   String _formatDuration(int seconds) {
@@ -34,8 +38,12 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
+      final bytes = await picked.readAsBytes();
       setState(() {
-        _customPhotoFile = File(picked.path);
+        _customPhotoBytes = bytes;
+        if (!kIsWeb) {
+          _customPhotoFile = File(picked.path);
+        }
         _selectedTheme = ShareCardTheme.photoBackground; // Otomatik olarak fotoğraflı moda al
       });
     }
@@ -48,10 +56,23 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
       final imageBytes = await _screenshotController.capture(pixelRatio: 3.0);
 
       if (imageBytes != null) {
-        await Gal.putImageBytes(
-          imageBytes,
-          name: 'Equibelle_${DateTime.now().millisecondsSinceEpoch}',
-        );
+        if (kIsWeb) {
+          await Share.shareXFiles(
+            [
+              XFile.fromData(
+                imageBytes,
+                mimeType: 'image/png',
+                name: 'Equibelle_${DateTime.now().millisecondsSinceEpoch}.png',
+              )
+            ],
+            text: 'Equibelle Biniş Kartım 🐎',
+          );
+        } else {
+          await Gal.putImageBytes(
+            imageBytes,
+            name: 'Equibelle_${DateTime.now().millisecondsSinceEpoch}',
+          );
+        }
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -112,26 +133,47 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
               ),
               const SizedBox(height: 20),
 
-              // 2. ÖZEL NOT ALANI
-              TextField(
-                controller: _noteController,
-                maxLength: 60,
-                onChanged: (_) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'Sürüşe özel not ekle (Örn: Rüzgar çok keyifliydi...)',
-                  hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
-                  filled: true,
-                  fillColor: Colors.white,
-                  prefixIcon: const Icon(Icons.edit_note_rounded, color: AppTheme.richSaddle),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: AppTheme.softGrey),
+              // 2. PARKUR VE ÖZEL NOT ALANLARI
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      controller: _locationController,
+                      maxLength: 25,
+                      onChanged: (_) => setState(() {}),
+                      decoration: InputDecoration(
+                        counterText: '',
+                        hintText: 'Konum / Parkur',
+                        hintStyle: const TextStyle(fontSize: 12, color: Colors.black38),
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: const Icon(Icons.location_on_outlined, size: 20, color: AppTheme.richSaddle),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.softGrey)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.softGrey)),
+                      ),
+                    ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: AppTheme.softGrey),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: _noteController,
+                      maxLength: 50,
+                      onChanged: (_) => setState(() {}),
+                      decoration: InputDecoration(
+                        counterText: '',
+                        hintText: 'Özel not (Keyifliydi...)',
+                        hintStyle: const TextStyle(fontSize: 12, color: Colors.black38),
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: const Icon(Icons.edit_note_rounded, size: 22, color: AppTheme.richSaddle),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.softGrey)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.softGrey)),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 12),
 
@@ -195,7 +237,9 @@ class _RideSummaryScreenState extends State<RideSummaryScreen> {
                   ride: widget.ride,
                   theme: _selectedTheme,
                   customNote: _noteController.text,
+                  locationName: _locationController.text,
                   customPhotoFile: _customPhotoFile,
+                  customPhotoBytes: _customPhotoBytes,
                 ),
               ),
               const SizedBox(height: 28),
